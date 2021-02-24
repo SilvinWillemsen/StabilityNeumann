@@ -10,13 +10,15 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
+\usepackage{xcolor} 
+\def\SWcomment[#1]{\textcolor{blue}{#1}}
 
 \begin{document}
 
 \maketitle
 
 \section{Introduction}
-In this document I will show the calculations for different von Neumann analyses and stability conditions.
+In this document I will show the calculations for different von Neumann analyses and stability conditions. The references to sections and equations with chapter numbers in them  (fx. (6.38) instead of fx. (9)) can be found in  Stefan Bilbao's Numerical Sound Synthesis book \cite{Bilbao2009}. Some background on this technique can be found in \cite{Strikwerda1989}.
 
 % \begin{figure}[h!]
 % \centering
@@ -193,7 +195,7 @@ can, after frequency domain analysis, be shown to be
     z + (4\lambda^2\sin^2(\beta h/2)+16\mu^2\sin^4(\beta h/2)-2) +z^{-1} = 0.
 \end{equation}
 Using \eqref{eq:condition214} and solving the inequality in terms of $\lambda$ and $\mu$ we get
-\begin{equation}\nonumber
+\begin{equation}\label{eq:stiffStringInequality}
     \begin{aligned}
     |4\lambda^2\sin^2(\beta h/2)+16\mu^2\sin^4(\beta h/2)-2|-1&\leq 1\\
     0\leq\lambda^2\sin^2(\beta h/2)+4\mu^2\sin^4(\beta h/2)&\leq 1,
@@ -203,27 +205,28 @@ which, after observing the $\sin$-terms to be bounded by 1 and non-negativity of
 \begin{equation}
     \lambda^2+4\mu^2\leq 1.
 \end{equation}
-Recalling \eqref{eq:lambda} and \eqref{eq:mu}, solving for $h$ yields
+Recalling \eqref{eq:lambda} and \eqref{eq:mu}, we can write
 \begin{equation}
     \begin{aligned}
         \frac{c^2k^2}{h^2} + 4 \frac{\kappa^2h^2}{h^4}\leq 1\\
-        h^4 - c^2k^2h^2+4\kappa^2k^2 \geq 0,
+        h^4 - c^2k^2h^2-4\kappa^2k^2 \geq 0,
     \end{aligned}
 \end{equation}
-and its minimum value can be found
+and the minimum stable value for $h$ can be found
+
 \begin{equation}
-    h \geq h_\text{min} = \sqrt{\frac{c^2k^2+\sqrt{c^4k^4-16\kappa^2k^2}}{2}}.
+    h \geq h_\text{min} = \sqrt{\frac{c^2k^2+\sqrt{c^4k^4+16\kappa^2k^2}}{2}}.
 \end{equation}
-\subsection{Adding Damping}
+\subsection{Adding Damping}\label{sec:dampedString}
 Adding damping to the stiff string will result in the following update equation:
 \begin{equation}\label{eq:dampedStiffString}
     \begin{aligned}
     (1+\sigma_0k)u_l^{n+1} &= (2-2\lambda^2-6\mu^2-\frac{4\sigma_1k}{h^2})u_l^n +(\lambda^2 + 4\mu^2 + \frac{2\sigma_1k}{h^2})(u_{l+1}^n+u_{l-1}^n)\\
-    &-\mu^2(u_{l+2}^n+u_{l-2}^n)+(-1 + \sigma_0k+\frac{4\sigma_1k}{h^2})u_l^{n-1} -\frac{2\sigma_1k}{h_2}(u_{l+1}^{n-1}+u_{l-1}^{n-1}),
+    &-\mu^2(u_{l+2}^n+u_{l-2}^n)+(-1 + \sigma_0k+\frac{4\sigma_1k}{h^2})u_l^{n-1} -\frac{2\sigma_1k}{h^2}(u_{l+1}^{n-1}+u_{l-1}^{n-1}),
     \end{aligned}
 \end{equation}
 where $\sigma_0 \geq 0$ and $\sigma_1\geq0$ are the frequency independent and frequency dependent damping respectively. The characteristic equation of \eqref{eq:dampedStiffString} can be shown to be
-\begin{equation}
+\begin{equation}\label{eq:charDampedString}
     (1+\sigma_0k)z + \bigg(16\mu^2\sin^4(\beta h/2)+(4\lambda^2+\frac{8\sigma_1k}{h^2})\sin^2(\beta h/2) - 2\bigg)+\bigg(1-\sigma_0k-\frac{8\sigma_1k}{h^2}\sin^2(\beta h/2)\bigg)z^{-1}=0.
 \end{equation}
 Dividing by $(1+\sigma_0k)$ to get a polynomial of the form presented in \eqref{eq:polynomialForm} and employing \eqref{eq:condition214} yields
@@ -231,18 +234,21 @@ Dividing by $(1+\sigma_0k)$ to get a polynomial of the form presented in \eqref{
 \begin{equation}\nonumber
     \begin{aligned}
         &\Bigg|\frac{16\mu^2\sin^4(\beta h/2)+(4\lambda^2+\frac{8\sigma_1k}{h^2})\sin^2(\beta h/2) - 2}{1+\sigma_0k}\Bigg|-1 \leq \frac{1-\sigma_0k-\frac{8\sigma_1k}{h^2}\sin^2(\beta h/2)}{1+\sigma_0k}\leq 1\\
-        &\Big|16\mu^2\sin^4(\beta h/2)+(4\lambda^2+\frac{8\sigma_1k}{h^2})\sin^2(\beta h/2) - 2\Big|\leq2-\frac{8\sigma_1k}{h^2}\sin^2(\beta h/2)\leq2+2\sigma_0k.
+        &\Bigg|16\mu^2\sin^4(\beta h/2)+(4\lambda^2+\frac{8\sigma_1k}{h^2})\sin^2(\beta h/2) - 2\Bigg|-(1+\sigma_0k) \leq 1-\sigma_0k-\frac{8\sigma_1k}{h^2}\sin^2(\beta h/2)\leq 1+\sigma_0k\\
+        &\Big|16\mu^2\sin^4(\beta h/2)+(4\lambda^2+\frac{8\sigma_1k}{h^2})\sin^2(\beta h/2) - 2\Big|\leq2-\frac{8\sigma_1k}{h^2}\sin^2(\beta h/2)\leq2+2\sigma_0k\\
+        &\Big|16\mu^2\sin^4(\beta h/2)+(4\lambda^2+\frac{8\sigma_1k}{h^2})\sin^2(\beta h/2) - 2\Big|-2\leq-\frac{8\sigma_1k}{h^2}\sin^2(\beta h/2)\leq2\sigma_0k.
     \end{aligned}
 \end{equation}
-Assuming the lowest possible value for $\sigma_0$ (which is 0) and subtracting 2 from all, we get the following inequality
+% \SWcomment[Something wrong here with $\sigma_0$] Assuming the lowest possible value for $\sigma_0$ (which is 0) and subtracting 2 from all, we get the following inequality
+The last inequality is always true due to the fact that $\sigma_0,\sigma_1 \geq 0$.  
 \begin{equation}
         \Big|16\mu^2\sin^4(\beta h/2)+(4\lambda^2+\frac{8\sigma_1k}{h^2})\sin^2(\beta h/2) - 2\Big|-2\leq-\frac{8\sigma_1k}{h^2}\sin^2(\beta h/2)\leq0.
 \end{equation}
-It can be concluded that the last inequality will be satisfied for any value of $\beta$, i.e. $-\frac{8\sigma_1k}{h^2}\sin^2(\beta h/2)$ will always be less or equal to zero. Removing this inequality and continuing the derivation gives
+It can be concluded that the last inequality will be satisfied for any value of $\beta$, i.e., $-\frac{8\sigma_1k}{h^2}\sin^2(\beta h/2)$ will always be less or equal to zero. Removing this inequality and continuing the derivation gives
 \begin{equation}
     0 \leq 16\mu^2\sin^4(\beta h/2) + 4\lambda^2\sin^2(\beta h/2) \leq 4-\frac{16\sigma_1k}{h^2}\sin^2(\beta h/2).
 \end{equation}
-Again, we know that the first inequality will always be satisfied (squared terms), so we can disregard this inequality as well. Continuing..
+Again, we know that the first inequality will always be satisfied (squared terms), so disregarding this we can continue:
 \begin{equation}
     \begin{aligned}
         4\mu^2\sin^4(\beta h/2) + \lambda^2\sin^2(\beta h/2)+\frac{4\sigma_1k}{h^2}\sin^2(\beta h/2) \leq 1.
@@ -252,14 +258,169 @@ Considering (again) the fact that the $\sin$-terms are bounded by 1 we get the c
 \begin{equation}
     4\mu^2 + \lambda^2 + \frac{4\sigma_1k}{h^2} \leq 1,
 \end{equation}
-which, again recalling \eqref{eq:lambda} and \eqref{eq:mu}, can be solved for $h$:
+which, again recalling \eqref{eq:lambda} and \eqref{eq:mu}, can be solved for the minimum stable value of $h$:
 \begin{equation}
     \begin{aligned}
-        &\frac{4\kappa^2k^2}{h^4}+\frac{c^2k^2-4\sigma_1k}{h^2} - 1 \leq 0,\\
-        &h^4 - (c^2k^2-4\sigma_1k)h^2 - 4\kappa^2k^2 \geq 0,\\
-        &h\geq\sqrt{\frac{c^2k^2+4\sigma_1k+\sqrt{(c^2k^2+4\sigma_1k)^2+16\kappa^2k^2}}{2}}
+        &\frac{4\kappa^2k^2}{h^4}+\frac{c^2k^2+4\sigma_1k}{h^2} - 1 \leq 0,\\
+        &h^4 - (c^2k^2+4\sigma_1k)h^2 - 4\kappa^2k^2 \geq 0,\\
+        &h\geq h_\text{min} = \sqrt{\frac{c^2k^2+4\sigma_1k+\sqrt{(c^2k^2+4\sigma_1k)^2+16\kappa^2k^2}}{2}}.
     \end{aligned}
 \end{equation}
+\subsubsection{Alternatively..}
+By only looking at the discrete and not-expanded PDE of the damped stiff string
+\begin{equation}\label{eq:dampedStiffStringFDS}
+    \delta_{tt}u=c^2\delta_{xx}u-\kappa^2\delta_{xxxx}u-2\sigma_0\delta_{t\cdot}u+2\sigma_1\delta_{t-}\delta_{xx}u,
+\end{equation}
+we can use the following identities (Eqs. 5.15a and 5.15b):
+\begin{subequations}\label{eq:fourierIdentities}
+\begin{align}
+% \delta_{tt}u \overset{\mathcal{F}}{\Longrightarrow}-\frac{4}{k^2}sin^2n
+    \delta_{xx}u \overset{\mathcal{F}}{\Longrightarrow} -\frac{4}{h^2}\sin^2(\beta h/2)\tilde{u}\\
+    \delta_{xxxx}u \overset{\mathcal{F}}{\Longrightarrow} \frac{16}{h^4}\sin^4(\beta h/2)\tilde{u}
+\end{align}
+\end{subequations}
+which, after frequency analysis yields
+\begin{equation}
+\begin{aligned}
+    z - 2 + z^{-1} &= -4\lambda^2\sin^2(\beta h/2) - 16\mu^2\sin^4(\beta h/2) - \sigma_0kz + \sigma_0k z^{-1} \\
+    &- \frac{8 \sigma_1 k}{h^2}\sin^2(\beta h/2) + \frac{8 \sigma_1 k}{h^2} \sin^2(\beta h/2)z^{-1}
+    \end{aligned}
+\end{equation}
+and can be rewritten to characteristic equation \eqref{eq:charDampedString}.
+
+\subsection{Centered Frequency Dependent Damping}
+We can modify Eq. \eqref{eq:dampedStiffStringFDS} to have a centered-time rather than a backwards-time operator 
+\begin{equation}
+    \delta_{tt}u=c^2\delta_{xx}u-\kappa^2\delta_{xxxx}u-2\sigma_0\delta_{t\cdot}u+2\sigma_1\delta_{t\cdot}\delta_{xx}u.
+\end{equation}
+Although, this makes the scheme implicit, it has great properties with regards to stability as will be shown below. 
+
+Using the identities in \eqref{eq:fourierIdentities} we get
+\begin{equation}
+\begin{aligned}
+    z - 2 + z^{-1} &= -4\lambda^2\sin^2(\beta h/2) - 16\mu^2\sin^4(\beta h/2) - \sigma_0kz + \sigma_0k z^{-1} \\
+    &- \frac{4 \sigma_1 k}{h^2}\sin^2(\beta h/2)z + \frac{4 \sigma_1 k}{h^2} \sin^2(\beta h/2)z^{-1}
+    \end{aligned}
+\end{equation}
+which after refactoring yields the characteristic equation
+\begin{equation}
+    \begin{aligned}
+        \left(1+\sigma_0k + \frac{4\sigma_1k}{h^2}\sin^2(\beta h/2)\right)z &+ \left(16\mu^2\sin^4(\beta h/2)+4\lambda^2\sin^2(\beta h/2) - 2\right)\\
+        & + \left(1-\sigma_0k - \frac{4\sigma_1k}{h^2}\sin^2(\beta h/2)\right)z^{-1} = 0.
+    \end{aligned}
+\end{equation}
+Then, again, written in the form \eqref{eq:polynomialForm} and employing \eqref{eq:condition214} yields
+\begin{align*}
+    &\left|\frac{16\mu^2\sin^4(\beta h/2)+4\lambda^2\sin^2(\beta h/2) - 2}{1+\sigma_0k + \frac{4\sigma_1k}{h^2}\sin^2(\beta h/2)} \right|-1 \leq \frac{1-\sigma_0k - \frac{4\sigma_1k}{h^2}\sin^2(\beta h/2)}{1+\sigma_0k + \frac{4\sigma_1k}{h^2}\sin^2(\beta h/2)}\leq 1\\
+    &\left|16\mu^2\sin^4(\beta h/2)+4\lambda^2\sin^2(\beta h/2) - 2 \right|\leq1-\sigma_0k - \frac{4\sigma_1k}{h^2}\sin^2(\beta h/2)+ 1+\sigma_0k + \frac{4\sigma_1k}{h^2}\sin^2(\beta h/2)\\
+    &\qquad\qquad\qquad\qquad\qquad\leq 2+2\sigma_0k + \frac{8\sigma_1k}{h^2}\sin^2(\beta h/2)\\
+    &\left|16\mu^2\sin^4(\beta h/2)+4\lambda^2\sin^2(\beta h/2) - 2 \right|\leq 2 \leq 2+2\sigma_0k + \frac{8\sigma_1k}{h^2}\sin^2(\beta h/2)
+\end{align*}
+Notice that in the second step, all terms including damping cancel out, excluding $\sigma_1$ from the eventual stability condition. Also note that due to $\sigma_0, \sigma_1 \geq 0$, the last inequality is always satisfied leaving
+\begin{equation}
+    \left|16\mu^2\sin^4(\beta h/2)+4\lambda^2\sin^2(\beta h/2) - 2 \right|\leq 2
+\end{equation}
+which is identical to \eqref{eq:stiffStringInequality}.
+
+To conclude, the stability condition for the damped stiff string where a centered-time difference operator is used for the frequency dependent damping is identical to that of the undamped stiff string.
+\section{2D case: Damped Plate}
+The FDS for a 2D (damped) plate is defined as the following:
+\begin{equation}\label{eq:plateFDS}
+    \delta_{tt}u = -\kappa^2\delta_{\Delta\boxplus}\delta_{\Delta\boxplus} u - 2\sigma_0\delta_{t\cdot}u + 2\sigma_1\delta_{t-}\delta_{\Delta\boxplus}u.
+\end{equation}
+We can use the following identities (the equations in (10.14)) for frequency analysis
+\begin{align}
+% \delta_{tt}u \overset{\mathcal{F}}{\Longrightarrow}-\frac{4}{k^2}sin^2n
+    \delta_{\Delta\boxplus}u \overset{\mathcal{F}}{\Longrightarrow} -\frac{4}{h^2}(p_x + p_y)\tilde{u}\\
+    \delta_{\Delta\boxplus}\delta_{\Delta\boxplus}u \overset{\mathcal{F}}{\Longrightarrow} \frac{16}{h^4}(p_x + p_y)^2\tilde{u}
+\end{align}
+where (Eq. (10.13))
+\begin{equation}\label{eq:pxpy}
+    p_x = \sin^2(\beta_xh/2) \quad \text{and} \quad p_y = \sin^2(\beta_yh/2)
+\end{equation}
+and write the following characteristic equation
+\begin{equation}
+    (1+\sigma_0k)z + \Big(16\mu^2(p_x+p_y)^2 + \frac{8\sigma_1k}{h^2}(p_x+p_y) - 2\Big) + (1 - \sigma_0k - \frac{8\sigma_1k}{h^2}(p_x+p_y))z^{-1} = 0.
+\end{equation}
+This can, similarly to the damped stiff string in Section \ref{sec:dampedString} of this document, be solved to
+\begin{equation}
+    4\mu^2(p_x+p_y)^2 + \frac{4\sigma_1k}{h^2}(p_x+p_y) \leq 1.
+\end{equation}
+Recalling \eqref{eq:pxpy}, and given the fact that these are bounded by 1, we can write the following
+\begin{gather}
+    4\mu^2(1+1)^2 + \frac{4\sigma_1k}{h^2}(1+1) \leq 1\nonumber\\
+    16\mu^2 + \frac{8\sigma_1k}{h^2} \leq 1.
+\end{gather}
+Solving for $h$ then gives
+\begin{align}
+    &1 \geq \frac{16\kappa^2k^2}{h^4} + \frac{8\sigma_1k}{h^2}\nonumber\\
+    &h^4 - 8\sigma_1kh^2 - 16\kappa^2k^2 \geq 0\nonumber\\
+    &h \geq \sqrt{\frac{8\sigma_1k +\sqrt{(8\sigma_1k)^2 + 64\kappa^2k^2}}{2}}\nonumber\\
+    &h\geq \sqrt{\frac{8\sigma_1k+8\sqrt{\sigma_1^2k^2+\kappa^2k^2}}{2}}\nonumber\\
+    &h \geq 2\sqrt{k\left(\sigma_1 + \sqrt{\sigma_1^2 + \kappa^2}\right)}
+\end{align}
+
+\subsection{Adding tension (Stiff damped membrane)}
+Adding a tension term to the plate above (Eq. \eqref{eq:plateFDS}) to make it a stiff damped membrane yields
+\begin{equation}
+    \delta_{tt}u = c^2\delta_{\Delta\boxplus}u -\kappa^2\delta_{\Delta\boxplus}\delta_{\Delta\boxplus} u - 2\sigma_0\delta_{t\cdot}u + 2\sigma_1\delta_{t-}\delta_{\Delta\boxplus}u.
+\end{equation}
+%
+The characteristic equation will then be
+\begin{equation}
+    (1+\sigma_0k)z + \left(4\lambda^2(p_x+p_y)+16\mu^2(p_x+p_y)^2 + \frac{8\sigma_1k}{h^2}(p_x+p_y) - 2\right) + \left(1 - \sigma_0k - \frac{8\sigma_1k}{h^2}(p_x+p_y)\right)z^{-1} = 0,
+\end{equation}
+and can, similarly to the plate, be solved to
+\begin{equation}
+    \lambda^2(p_x+p_y)+4\mu^2(p_x+p_y)^2+\frac{4\sigma_1k}{h^2}(p_x+p_y)\leq 1.
+\end{equation}
+Again, recalling \eqref{eq:pxpy} and that these are bounded by 1, we can write
+\begin{gather}
+    \lambda^2(1+1)+4\mu^2(1+1)^2+\frac{4\sigma_1k}{h^2}(1+1)\leq 1\nonumber\\
+    2\lambda^2+16\mu^2+\frac{8\sigma_1k}{h^2}\leq 1.
+\end{gather}
+Solving for $h$ then finally yields
+\begin{align}
+    h^4 - (2c^2k^2 + 8\sigma_1k)h^2 - 16\kappa^2k^2 \geq 0\nonumber\\
+    h\geq \sqrt{\frac{2c^2k^2 + 8\sigma_1k+\sqrt{(2c^2k^2 + 8\sigma_1k)^2 + 64\kappa^2k^2}}{2}}\nonumber \\
+    h\geq \sqrt{c^2k^2 + 4\sigma_1k+\frac{1}{2}\sqrt{4(c^2k^2 + 4\sigma_1k)^2 + 64\kappa^2k^2}}\nonumber\\
+    h\geq \sqrt{c^2k^2 + 4\sigma_1k+\sqrt{(c^2k^2 + 4\sigma_1k)^2 + 16\kappa^2k^2}}
+\end{align}
 \bibliographystyle{plain}
 \bibliography{references}
+\appendix
+\newpage
+\section{Note on scaling}
+Proof that calculating the stability condition in non-dimensionalised form is the same as the condition in dimensionalised form scaled by $\frac{1}{L}$, i.e., 
+\begin{equation}
+    h_\text{nd} = \frac{1}{L}h_\text{d}.
+\end{equation}
+Let's use the case of the undamped stiff string
+\begin{align}
+    h_\text{d} &= \sqrt{\frac{c^2k^2 + \sqrt{c^4k^4 + 16\kappa_\text{d}^2k^2}}{2}} \label{eq:hd}\\
+    h_\text{nd} &= \sqrt{\frac{\gamma^2k^2 + \sqrt{\gamma^4k^4 + 16\kappa_\text{nd}^2k^2}}{2}}\label{eq:hnd}
+\end{align}
+with
+\begin{equation}
+    \gamma = \frac{c}{L}\quad \text{and}\quad \kappa_\text{nd} = \frac{\kappa_\text{d}}{L^2}.
+\end{equation}
+
+Substituting these definitions into \eqref{eq:hnd} yields
+\begin{align}
+    h_\text{nd} &= \sqrt{\frac{\frac{c^2}{L^2}k^2 + \sqrt{\frac{c^4}{L^4}k^4 + 16\frac{\kappa_\text{d}^2}{L^4}k^2}}{2}}\nonumber\\
+    &= \sqrt{\frac{\frac{1}{L^2}c^2k^2 + \sqrt{\frac{1}{L^4}\left(c^4k^4 + 16\kappa_\text{d}^2k^2\right)}}{2}}\nonumber\\
+    &= \sqrt{\frac{1}{L^2}\left(\frac{c^2k^2 + \sqrt{c^4k^4 + 16\kappa_\text{d}^2k^2}}{2}\right)}\nonumber\\
+    &= \frac{1}{L}\sqrt{\left(\frac{c^2k^2 + \sqrt{c^4k^4 + 16\kappa_\text{d}^2k^2}}{2}\right)}\nonumber\\
+    h_\text{nd} &= \frac{1}{L}h_\text{d} \quad\Longleftrightarrow \quad h_\text{d} = Lh_\text{nd}
+\end{align}
+%
+We know that our number of points is
+\begin{equation}
+    N = \text{floor}\left(\frac{L}{h_\text{d}}\right).
+\end{equation}
+If we use the non-dimensionalised form of the grid spacing $h_\text{nd}$ this will result in
+\begin{equation}
+    N = \text{floor}\left(\frac{L}{L h_\text{nd}}\right) = \text{floor}\left(\frac{1}{h_\text{nd}}\right)
+\end{equation}
+
 \end{document}
